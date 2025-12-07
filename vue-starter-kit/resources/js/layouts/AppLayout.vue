@@ -52,7 +52,7 @@
 import { Link } from '@inertiajs/vue3';
 import { router } from '@inertiajs/vue3';
 import { usePage } from '@inertiajs/vue3'
-import NavLinks from '@/Components/NavLinks.vue'    
+import NavLinks from '@/components/NavLinks.vue'    
 
 // Récupère les infos de l'utilisateur connecté
 const { props } = usePage()
