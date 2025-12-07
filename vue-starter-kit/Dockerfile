@@ -16,8 +16,8 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy all files
-COPY . .
+# Copy only the application files from the vue-starter-kit subdirectory
+COPY ./vue-starter-kit/ .
 
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader
