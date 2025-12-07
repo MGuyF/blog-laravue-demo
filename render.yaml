@@ -1,18 +1,12 @@
 services:
   - type: web
     name: blog-laravue-demo
-    # On ne spécifie plus le runtime, on laisse Render détecter PHP
-    rootDir: vue-starter-kit
+    env: docker
+    dockerfilePath: ./vue-starter-kit/Dockerfile
     plan: free
-    buildCommand: |
-      composer install --no-dev --optimize-autoloader
-      npm install
-      npm run build
-      php artisan migrate --force
-    startCommand: php artisan serve --host 0.0.0.0 --port $PORT
     envVars:
       - key: APP_URL
-        value: ${RENDER_EXTERNAL_URL} # CORRECTION: On utilise la variable fournie par Render
+        value: ${RENDER_EXTERNAL_URL}
       - key: APP_KEY
         generateValue: true
       - key: DB_CONNECTION
@@ -37,6 +31,8 @@ services:
         fromDatabase:
           name: blog-db
           property: password
+      - key: PORT
+        value: 10000
 
 databases:
   - name: blog-db
