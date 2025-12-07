@@ -1,7 +1,7 @@
 services:
   - type: web
     name: blog-laravue-demo
-    env: php
+    runtime: php
     rootDir: vue-starter-kit
     plan: free
     buildCommand: |
@@ -12,10 +12,7 @@ services:
     startCommand: php artisan serve --host 0.0.0.0 --port $PORT
     envVars:
       - key: APP_URL
-        fromService:
-          type: web
-          name: blog-laravue-demo
-          property: url
+        sync: false
       - key: APP_KEY
         generateValue: true
       - key: DB_CONNECTION
