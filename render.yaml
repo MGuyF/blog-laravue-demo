@@ -22,7 +22,7 @@ services:
         value: pgsql
       - key: DB_HOST
         fromDatabase:
-          name: blog-db # Assurez-vous que c'est le nom de votre DB sur Render
+          name: blog-db
           property: host
       - key: DB_PORT
         fromDatabase:
@@ -41,6 +41,6 @@ services:
           name: blog-db
           property: password
 
-  - type: psql
-    name: blog-db
+databases:
+  - name: blog-db
     plan: free
