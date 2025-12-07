@@ -1,50 +1,35 @@
-# Stage 1: Build frontend assets
-FROM node:20 as node_assets
+# Stage 1: PHP Base with dependencies
+FROM php:8.3-cli
 
 WORKDIR /app
 
-# Copy only package.json and package-lock.json to leverage Docker cache
-COPY package*.json ./
-RUN npm install
-
-# Copy the rest of the frontend files
-COPY resources/ ./resources/
-COPY tailwind.config.js vite.config.ts tsconfig.json ./
-
-# Build the assets
-RUN npm run build
-
-# Stage 2: Setup PHP environment
-FROM php:8.3-fpm
-
-WORKDIR /var/www/html
-
-# Install system dependencies for Laravel (gd, pdo, zip, etc.)
+# Install system dependencies, PHP extensions, and Node.js
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     libzip-dev \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_pgsql zip
+    libsqlite3-dev \
+    nodejs \
+    npm \
+    && docker-php-ext-install pdo pdo_sqlite zip
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy application files from the current directory into the container
+# Copy all files
 COPY . .
 
-# Copy built assets from the node_assets stage
-COPY --from=node_assets /app/public/build ./public/build
-
-# Install Composer dependencies
+# Install dependencies
 RUN composer install --no-dev --optimize-autoloader
+RUN npm install
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Build assets
+RUN npm run build
 
-# Expose port 9000 and start php-fpm server
-EXPOSE 9000
-CMD ["php-fpm"]
+# Create the SQLite database file and run migrations
+RUN touch database/database.sqlite
+RUN php artisan migrate --force
+
+# Expose port and define start command
+EXPOSE 10000
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]

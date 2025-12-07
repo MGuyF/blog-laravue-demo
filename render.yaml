@@ -10,30 +10,6 @@ services:
       - key: APP_KEY
         generateValue: true
       - key: DB_CONNECTION
-        value: pgsql
-      - key: DB_HOST
-        fromDatabase:
-          name: blog-db
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: blog-db
-          property: port
-      - key: DB_DATABASE
-        fromDatabase:
-          name: blog-db
-          property: database
-      - key: DB_USERNAME
-        fromDatabase:
-          name: blog-db
-          property: user
-      - key: DB_PASSWORD
-        fromDatabase:
-          name: blog-db
-          property: password
+        value: sqlite
       - key: PORT
         value: 10000
-
-databases:
-  - name: blog-db
-    plan: free
