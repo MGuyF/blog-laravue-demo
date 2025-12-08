@@ -2,7 +2,7 @@ services:
   - type: web
     name: blog-laravue-demo
     env: docker
-    dockerfilePath: ./vue-starter-kit/Dockerfile
+    dockerfilePath: ./Dockerfile
     plan: free
     envVars:
       - key: APP_URL
