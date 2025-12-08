@@ -12,7 +12,7 @@ services:
       - key: APP_URL
         value: ${RENDER_EXTERNAL_URL}
       - key: APP_KEY
-        generateValue: true
+        value: base64:Y7ozrhBK+221B8xjsv6N578BfexFlnCkve7T4pWyi+c=
       - key: DB_CONNECTION
         value: sqlite
       - key: DB_DATABASE
