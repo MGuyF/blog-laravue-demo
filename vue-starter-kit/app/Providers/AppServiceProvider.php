@@ -21,6 +21,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Force HTTPS in production
+        if ($this->app->environment('production')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
+        // Share Inertia data
         Inertia::share([
             'auth' => [
                 'user' => fn() => Auth::user(),

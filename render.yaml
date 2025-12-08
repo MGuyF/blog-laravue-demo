@@ -8,16 +8,28 @@ services:
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
-        value: true
+        value: false
       - key: APP_URL
-        value: ${RENDER_EXTERNAL_URL}
+        value: https://blog-laravue-demo-dbx4.onrender.com
       - key: APP_KEY
         value: base64:Y7ozrhBK+221B8xjsv6N578BfexFlnCkve7T4pWyi+c=
+      - key: ASSET_URL
+        value: https://blog-laravue-demo-dbx4.onrender.com
+      - key: APP_FORCE_HTTPS
+        value: "true"
       - key: DB_CONNECTION
         value: sqlite
       - key: DB_DATABASE
         value: /app/database/database.sqlite
       - key: LOG_CHANNEL
         value: stderr
+      - key: LOG_LEVEL
+        value: info
+      - key: SESSION_DRIVER
+        value: file
+      - key: CACHE_DRIVER
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
       - key: PORT
         value: 10000
