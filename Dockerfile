@@ -43,21 +43,42 @@ RUN mkdir -p /app/storage/framework/cache/data \
 # Create the SQLite database file
 RUN touch /app/database/database.sqlite
 
-# Set proper permissions
-RUN chmod -R 775 /app/storage /app/bootstrap/cache /app/database \
-    && chown -R www-data:www-data /app/storage /app/bootstrap/cache /app/database
+# Set proper permissions (run as root, then PHP will handle it)
+RUN chmod -R 777 /app/storage /app/bootstrap/cache /app/database
 
-# Generate application key if not set
-RUN php artisan key:generate --force || true
+# Clear any cached config that might interfere
+RUN rm -rf /app/bootstrap/cache/*.php
+
+# Generate application key
+RUN php artisan key:generate --force
 
 # Run migrations
-RUN php artisan migrate --force
+RUN php artisan migrate --force || echo "Migration failed but continuing..."
 
-# Cache configuration
-RUN php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
+# Don't cache config in build (do it at runtime if needed)
+# This prevents cache issues with environment variables
 
-# Expose port and define start command
+# Create a startup script
+RUN echo '#!/bin/bash\n\
+set -e\n\
+echo "Starting application..."\n\
+echo "Current directory: $(pwd)"\n\
+echo "Files in /app:"\n\
+ls -la /app\n\
+echo "Database file exists:"\n\
+ls -la /app/database/database.sqlite || echo "Database not found!"\n\
+echo "Storage permissions:"\n\
+ls -la /app/storage\n\
+echo "Environment variables:"\n\
+env | grep APP_ || true\n\
+echo "Running migrations..."\n\
+php artisan migrate --force || echo "Migration warning"\n\
+echo "Starting server..."\n\
+php artisan serve --host=0.0.0.0 --port=10000' > /start.sh \
+    && chmod +x /start.sh
+
+# Expose port
 EXPOSE 10000
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
+
+# Use the startup script
+CMD ["/bin/bash", "/start.sh"]
