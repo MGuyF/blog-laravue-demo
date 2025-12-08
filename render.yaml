@@ -5,11 +5,19 @@ services:
     dockerfilePath: ./Dockerfile
     plan: free
     envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: true
       - key: APP_URL
         value: ${RENDER_EXTERNAL_URL}
       - key: APP_KEY
         generateValue: true
       - key: DB_CONNECTION
         value: sqlite
+      - key: DB_DATABASE
+        value: /app/database/database.sqlite
+      - key: LOG_CHANNEL
+        value: stderr
       - key: PORT
         value: 10000
