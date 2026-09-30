@@ -22,8 +22,19 @@ export interface SharedData extends PageProps {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
+    flash: { success?: string | null };
     ziggy: Config & { location: string };
     sidebarOpen: boolean;
+}
+
+export interface Post {
+    id: number;
+    title: string;
+    content: string;
+    user_id: number | null;
+    created_at: string;
+    updated_at: string;
+    user?: User | null;
 }
 
 export interface User {

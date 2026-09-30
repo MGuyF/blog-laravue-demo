@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class PostController extends Controller
 {
-    // Affiche tous les posts avec l'utilisateur connecté
+    /**
+     * Display every post together with its author.
+     */
     public function index()
     {
         return Inertia::render('posts/Index', [
@@ -18,41 +20,50 @@ class PostController extends Controller
         ]);
     }
 
-    // Affiche le formulaire de création
+    /**
+     * Show the post creation form.
+     */
     public function create()
     {
         return Inertia::render('posts/Create');
     }
 
-    // Enregistre un nouveau post
-        public function store(Request $request)
-        {
-            $validated = $request->validate([
-                'title' => 'required',
-                'content' => 'required',
-            ]);
+    /**
+     * Store a newly created post for the authenticated user.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+        ]);
 
-            Auth::user()->posts()->create($validated);
+        Auth::user()->posts()->create($validated);
 
-            return redirect()->route('posts.index');
-        }
+        return redirect()->route('posts.index')->with('success', 'Post published successfully.');
+    }
 
-    // Affiche un post unique
+    /**
+     * Display a single post.
+     */
     public function show(Post $post)
     {
         return Inertia::render('posts/Show', ['post' => $post->load('user')]);
     }
 
-
-    // 🔍 Afficher la page d’édition
+    /**
+     * Show the post edition form.
+     */
     public function edit(Post $post)
     {
         return Inertia::render('posts/Edit', [
-            'post' => $post
+            'post' => $post,
         ]);
     }
 
-    // ✏️ Mettre à jour un post
+    /**
+     * Update an existing post.
+     */
     public function update(Request $request, Post $post)
     {
         $validated = $request->validate([
@@ -62,14 +73,16 @@ class PostController extends Controller
 
         $post->update($validated);
 
-        return redirect()->route('posts.index')->with('success', 'Article mis à jour avec succès !');
+        return redirect()->route('posts.index')->with('success', 'Post updated successfully.');
     }
 
-    // ❌ Supprimer un post
+    /**
+     * Delete a post.
+     */
     public function destroy(Post $post)
     {
         $post->delete();
 
-        return redirect()->route('posts.index')->with('success', 'Article supprimé avec succès !');
+        return redirect()->route('posts.index')->with('success', 'Post deleted successfully.');
     }
 }

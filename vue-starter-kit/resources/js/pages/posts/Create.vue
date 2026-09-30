@@ -1,75 +1,81 @@
-<template>
-    <Head title="Creation" />
-    <AppLayout>
-        <div class="p-6 max-w-2xl mx-auto">
-            <!-- 🔹 Titre stylisé avec icône -->
-            <h1 class="text-xl font-bold mb-6 flex items-center gap-2 text-gray-800">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20h9" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M16.5 3.5a2.121 2.121 0 113 3L6.5 20.5H3v-3L16.5 3.5z" />
-                </svg>
-                Créer un article
-            </h1>
-
-            <!-- 📝 Formulaire -->
-            <form @submit.prevent="submit">
-                <div class="space-y-4">
-
-                    <!-- 🔸 Titre -->
-                    <div>
-                        <label for="title" class="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 6h18M3 12h18M3 18h18" />
-                            </svg>
-                            Titre
-                        </label>
-                        <input v-model="form.title" id="title" type="text"
-                            class="w-full bg-white p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                    </div>
-
-                    <!-- 🔸 Contenu -->
-                    <div>
-                        <label for="content"
-                            class="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 4h16v16H4z" />
-                            </svg>
-                            Contenu
-                        </label>
-                        <textarea v-model="form.content" id="content" rows="5"
-                            class="w-full bg-white p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                    </div>
-
-                    <!-- 🔘 Bouton -->
-                    <div class="flex justify-end gap-3">
-                        <Button type="button" class="mt-2" @click="$inertia.visit('/posts')">Retour</Button>
-                        <Button type="submit" class="mt-2">Publier</Button>
-                    </div>
-
-                </div>
-            </form>
-        </div>
-    </AppLayout>
-</template>
-
-<script setup>
+<script setup lang="ts">
+import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
-import { useForm } from '@inertiajs/vue3';
-import { Head } from '@inertiajs/vue3';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import { PenLine } from 'lucide-vue-next';
 
 const form = useForm({
     title: '',
-    content: ''
+    content: '',
 });
 
-function submit() {
+const submit = () => {
     form.post('/posts');
-}
+};
 </script>
+
+<template>
+    <Head title="New post" />
+
+    <AppLayout>
+        <div class="mx-auto w-full max-w-2xl">
+            <header class="mb-6 flex items-start gap-3">
+                <span class="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-lg">
+                    <PenLine class="size-5" aria-hidden="true" />
+                </span>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight">Write a new post</h1>
+                    <p class="text-muted-foreground text-sm">Give your article a clear title and share your thoughts.</p>
+                </div>
+            </header>
+
+            <Card>
+                <form @submit.prevent="submit">
+                    <CardContent class="space-y-5">
+                        <div class="grid gap-2">
+                            <Label for="title">Title</Label>
+                            <Input
+                                id="title"
+                                v-model="form.title"
+                                name="title"
+                                type="text"
+                                placeholder="An interesting title"
+                                autofocus
+                                :aria-invalid="Boolean(form.errors.title)"
+                            />
+                            <InputError :message="form.errors.title" />
+                        </div>
+
+                        <div class="grid gap-2">
+                            <Label for="content">Content</Label>
+                            <Textarea
+                                id="content"
+                                v-model="form.content"
+                                name="content"
+                                rows="8"
+                                placeholder="Write your post content here…"
+                                :aria-invalid="Boolean(form.errors.content)"
+                            />
+                            <InputError :message="form.errors.content" />
+                        </div>
+                    </CardContent>
+
+                    <CardFooter class="mt-6 justify-end gap-2 border-t">
+                        <Button variant="secondary" as-child>
+                            <Link href="/posts">Cancel</Link>
+                        </Button>
+
+                        <Button type="submit" :disabled="form.processing">
+                            {{ form.processing ? 'Publishing…' : 'Publish post' }}
+                        </Button>
+                    </CardFooter>
+                </form>
+            </Card>
+        </div>
+    </AppLayout>
+</template>
